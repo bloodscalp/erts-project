@@ -1,0 +1,32 @@
+------------------------
+- INSTALLATION de RXTX -
+------------------------
+
+Veuillez vos reporter au système d'exploitation que vous utilisez. Il se peut que vous ayez besoin de modifier les permissions pour les dossiers.
+
+Nous n'avons testé que l'installation sous Windows. Possiblement, les installations sous les autres systèmes peuvent ne pas fonctionner correctement.
+
+Pour plus d'informations, veuillez visiter le site officiel à l'adresse suivante : 
+http://rxtx.qbang.org/wiki.
+
+
+Windows :
+---------
+Copier "RXTXcomm.jar" dans le dossier "[JAVA_HOME]\jre[VERSION]\lib\ext"
+Copier "rxtxSerial.dll" dans le dossier "[JAVA_HOME]\jre[VERSION]\jre\bin"
+
+Mac OS X (x86 et PPC) :
+-----------------------
+Copier "RXTXcomm.jar" dans "/Library/Java/Extensions"
+Copier "librxtxSerial.jnilib" dans "/Library/Java/Extensions"
+
+Linux (only x86, x86_64, ia64) :
+--------------------------------
+Copier "RXTXcomm.jar" dans "[JAVA_HOME]/jre[VERSION]/lib/ext"
+Copier "librxtxSerial.so" dans [JAVA_HOME]/jre/lib/[TYPE_MACHINE]" (i.e. i386)
+
+
+Solaris (Seulement sparc) :
+---------------------------
+Copier "RXTXcomm.jar" dans "[JAVA_HOME]/jre[VERSION]/ext"
+Copier "librxtxSerial.so" dans "[JAVA_HOME]/jre[VERSION]/lib/[TYPE_MACHINE]"
