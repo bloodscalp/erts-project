@@ -6,7 +6,6 @@
 *.a
 
 # Shared objects (inc. Windows DLLs)
-*.dll
 *.so
 *.so.*
 *.dylib
@@ -16,5 +15,11 @@
 *.out
 *.app
 
+
+
+*.launch
+
 # Folders
 .metadata/
+interface-host/
+tampomat/out/
