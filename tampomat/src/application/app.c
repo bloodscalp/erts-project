@@ -207,13 +207,10 @@ void initialise_taches (void) {
 	OSTaskCreate(thread_ihm, (void *)i,
 				init_pile(pileTache[i], TAILLE_PILE_TACHE),
 				PRIORITE_TACHE+i);
-	OSTaskDel(OS_PRIO_SELF);
-
 	i=1;
 	OSTaskCreate(thread_regulation, (void *)i,
 				init_pile(pileTache[i], TAILLE_PILE_TACHE),
 				PRIORITE_TACHE+i);
-	OSTaskDel(OS_PRIO_SELF);
 
 	i=2;
 	OSTaskCreate(thread_car_model, (void *)i,
