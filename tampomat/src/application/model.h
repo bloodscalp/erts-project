@@ -4,7 +4,7 @@
  *  Created on: 3 mai 2013
  *      Author: William
  */
-
+#include "model.c"
 #ifndef MODEL_H_
 #define MODEL_H_
 

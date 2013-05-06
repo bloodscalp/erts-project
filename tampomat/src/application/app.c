@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <includes.h>
 #include "stm32f10x_includes.h"
+#include "model.h"
 
 /************************************************************************
  *
@@ -25,7 +26,7 @@ FILE *fp_usart1;
 // Stack de la tache
 static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
 
-
+float speed;//
 /************************************************************************
  *
  * Definition de la tache
@@ -111,15 +112,20 @@ static void AppTask (void *p_arg)
 		}
 
 		// si on a accelere ou freine, on modifie l'acceleration
-		if (cmd == 'A' || cmd == 'B') {
-			a = throttle - breaks;
-			v0 = v;
-			t = 0;
-			fprintf(fp_usart1, "T%d\r\n",a);
+	//	if (cmd == 'A' || cmd == 'B') {
+			if (1){
+				//a = throttle - breaks;
+				//v0 = v;
+				//t = 0;
+				//fprintf(fp_usart1, "accelleratrion T%d\r\n",a);
+				simulation(&speed, breaks, throttle);
+				fprintf(fp_usart1, "sortie de %d\r\n ",a);
+				fprintf(fp_usart1,"breaks are: %d, throttle is: %d, speed is: %f\r\n", breaks,throttle,speed);
+
 		}
 
 		// si l'acceleration n'est pas nulle on modifie la vitesse
-		if (a != 0){
+	/*	if (a != 0){
 			if ((a*t +v0 >= 0) && (a*t +v0 <= 255))
 				v = a*t +v0;
 			else if (a*t +v0 > 255)
@@ -131,7 +137,7 @@ static void AppTask (void *p_arg)
 			OSTimeDly(OS_TICKS_PER_SEC / 1);
 
 			fprintf(fp_usart1, "V%d\r\n",v);
-		}
+		}*/
 
 		// incrementation du temps
 		t++;
