@@ -24,15 +24,37 @@
 FILE *fp_usart1;
 
 // Stack de la tache
-static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
+//static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
+// Stack de la tache
 
-float speed;//
+/* ----------------------------------------------- */
+
+#if OS_STK_GROWTH == 0
+#define init_pile(stack,size) (&stack[0])
+#else
+#define init_pile(stack,size) (&stack[size-1])
+#endif
+
+#define TAILLE_PILE_TACHE 	512
+#define MAX_TASKS 			16
+
+#define false 0
+#define true 1
+
+int PRIORITE_TACHE=4;
+OS_STK pileTache[MAX_TASKS][TAILLE_PILE_TACHE];
+
+void init_cible_ntrt(void);
+void initialise_taches (void);
+
+
+float speed;
 /************************************************************************
  *
  * Definition de la tache
  *
  ************************************************************************/
-static void AppTask (void *p_arg)
+static void thread_ihm (void *p_arg)
 {
 
 	(void)p_arg;
@@ -48,12 +70,6 @@ static void AppTask (void *p_arg)
 	uint8_t throttle = 0;
 	uint8_t breaks = 0;
 
-	// Init Sys. Tick
-	OS_CPU_SysTickInit();
-
-	#if OS_TASK_STAT_EN > 0
-		OSStatInit();
-	#endif
 
 	// attente de la commande de start pour demarrer
 	while (cmd != '1') {
@@ -151,44 +167,86 @@ static void AppTask (void *p_arg)
 
 /************************************************************************
  *
+ * Definition de la tache
+ *
+ ************************************************************************/
+static void thread_regulation (void *p_arg)
+{
+	(void)p_arg;
+	while (1) {
+		OSTimeDly(OS_TICKS_PER_SEC);
+	}
+}
+
+/************************************************************************
+ *
+ * Definition de la tache
+ *
+ ************************************************************************/
+static void thread_car_model (void *p_arg)
+{
+	(void)p_arg;
+	while (1) {
+		OSTimeDly(OS_TICKS_PER_SEC);
+	}
+}
+
+/************************************************************************
+ *
+ * Initialisation tick et des taches
+ *
+ ***********************************************************************/
+void initialise_taches (void) {
+	// Init Sys. Tick
+	OS_CPU_SysTickInit();
+	#if OS_TASK_STAT_EN > 0
+		OSStatInit();
+	#endif
+
+	int i=0;
+	OSTaskCreate(thread_ihm, (void *)i,
+				init_pile(pileTache[i], TAILLE_PILE_TACHE),
+				PRIORITE_TACHE+i);
+	OSTaskDel(OS_PRIO_SELF);
+
+	i=1;
+	OSTaskCreate(thread_regulation, (void *)i,
+				init_pile(pileTache[i], TAILLE_PILE_TACHE),
+				PRIORITE_TACHE+i);
+	OSTaskDel(OS_PRIO_SELF);
+
+	i=2;
+	OSTaskCreate(thread_car_model, (void *)i,
+				init_pile(pileTache[i], TAILLE_PILE_TACHE),
+				PRIORITE_TACHE+i);
+	OSTaskDel(OS_PRIO_SELF);
+}
+
+void init_cible_ntrt(void) {
+	BSP_IntDisAll(); 	// Desactivation des interruptions
+	OSInit(); 			// Initialisation de uCosII
+	BSP_IntEnAll(); 	// Activation des interruptions
+	BSP_Init(); 		// Initialisation de la carte NTRT
+
+	// Init. de l'USART1
+	//char cmdMain = '\0';
+	fp_usart1 = fopen ("USART1","w");
+}
+
+/************************************************************************
+ *
  * Programme principal
  *
  ***********************************************************************/
 int main (void)
 {
-	// Verification de la taille du nom
-	#if OS_TASK_NAME_SIZE > 13
-		INT8U err;
-	#endif
-
-	BSP_IntDisAll(); 	// Desactivation des interruptions
-	OSInit(); 			// Initialisation de uCosII
-	BSP_IntEnAll(); 	// Activation des interruptions
-
-	BSP_Init(); 		// Initialisation de la carte NTRT
-
-	// Init. de l'USART1
-	fp_usart1 = fopen ("USART1","w");
-
-	// Cree la tache
-	OSTaskCreateExt(AppTask,
-					(void *)0,
-					(OS_STK *)&AppTaskStk[APP_TASK_STK_SIZE-1],
-					APP_TASK_PRIO,
-					APP_TASK_PRIO,
-					(OS_STK *)&AppTaskStk[0],
-					APP_TASK_STK_SIZE,
-					(void *)0,
-					OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR);
-
-	// Verification de la taille du nom
-	#if OS_TASK_NAME_SIZE > 4
-		OSTaskNameSet(APP_TASK_PRIO, (INT8U*)"Task", &err);
-	#endif
+	init_cible_ntrt();
+	OSTaskCreate(initialise_taches, (void *)0,
+					init_pile(pileTache[MAX_TASKS], TAILLE_PILE_TACHE),
+					PRIORITE_TACHE+MAX_TASKS);
 
 	// Lancement de l'OS
 	OSStart();
-
 	while(1){}
 }
 
