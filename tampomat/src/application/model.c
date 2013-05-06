@@ -5,15 +5,15 @@
  *      Author: William
  */
 
-#define TENGINE			-0.04f
+/*#define TENGINE			-0.04f
 #define IENGINE			0.025f
 #define KBRAQUE			200.0f
 #define TCYCLE			0.1f
 #define VEHICLDYNAMIC	2.5f
 #define MASSE			1450.0f
-#define TORK_MAX		400.0f
+#define TORK_MAX		400.0f*/
 
-
+#include "model.h"
 void simulation(float *speed_sensor, float dec_sensor, float throttle){
 	static float pre_speed = 0.0f;
 	static float torq;
