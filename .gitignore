@@ -15,9 +15,11 @@
 *.out
 *.app
 
+
+
 *.launch
 
 # Folders
 .metadata/
-interface-host/bin/
+interface-host/
 tampomat/out/
