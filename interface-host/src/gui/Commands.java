@@ -15,6 +15,8 @@ public class Commands extends JPanel implements ActionListener {
 	private JButton offButton;
 	private JButton resButton;
 	private JButton setButton;
+	private JButton accButton;
+	private JButton decButton;
 	
 	private Controller ctrl;
 	
@@ -38,11 +40,18 @@ public class Commands extends JPanel implements ActionListener {
 		setButton = new JButton("SET");
 		this.add(setButton);
 		
+		accButton = new JButton("ACC");
+		this.add(accButton);
+		decButton = new JButton("DEC");
+		this.add(decButton);
+		
 		// Ecouteurs
         onButton .addActionListener((ActionListener) this);
         offButton.addActionListener((ActionListener) this);
         resButton.addActionListener((ActionListener) this);
         setButton.addActionListener((ActionListener) this);
+	    accButton.addActionListener((ActionListener) this);
+		decButton.addActionListener((ActionListener) this);
     }
     
     // Actions
@@ -57,5 +66,9 @@ public class Commands extends JPanel implements ActionListener {
         	ctrl.sendMessage(CONSTANTS.cmdRES, 0);
         else if (b == setButton)
         	ctrl.sendMessage(CONSTANTS.cmdSET, 0);
+		else if (b == accButton)
+        	ctrl.sendMessage(CONSTANTS.cmdACC, 0);
+		else if (b == decButton)
+        	ctrl.sendMessage(CONSTANTS.cmdDEC, 0);	
     }
 }

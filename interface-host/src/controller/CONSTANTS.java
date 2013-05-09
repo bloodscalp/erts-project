@@ -6,6 +6,9 @@ public class CONSTANTS {
 	public final static String cmdOFF = new String("0");
 	public final static String cmdRES = new String("R");
 	public final static String cmdSET = new String("S");
+
+	public final static String cmdACC = new String("AC");
+	public final static String cmdDEC = new String("DE");
 	
 	public final static String ACC = new String("A");
 	public final static String DEC = new String("B");
