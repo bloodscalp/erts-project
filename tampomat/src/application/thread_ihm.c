@@ -9,19 +9,21 @@
  ***********************************************************************/
 
 
-FILE *fp_usart1;
+//
 
 // Stack de la tache
-static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
+//
 #include "thread_ihm.h"
+#include "getset.h"
 /************************************************************************
  *
  * Definition de la tache
  *
  ************************************************************************/
-static void thread_IHM (void *p_arg)
+ void thread_IHM (void *p_arg)
 {
-
+	 FILE *fp_usart1;
+	 static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
 	(void)p_arg;
 
 
@@ -39,8 +41,8 @@ static void thread_IHM (void *p_arg)
 	uint8_t breaks = 0;
 	uint8_t ACC =0;
 	uint8_t DEC = 0;
-	bool set=false;
-	bool reset=false;
+	//bool set=false;
+	//bool reset=false;
 	// attente de la commande de start pour démarrer
 	while (cmd != '1') {
 		// scrute les entrees
@@ -54,7 +56,7 @@ static void thread_IHM (void *p_arg)
 	}
 	flag = 1;//on va triater l'entrée
 	//envois de la reponse de debut
-	fprintf(fp_usart1," sytème envclenché\r\n");
+	fprintf(fp_usart1," sytème enclenché\r\n");
 
 	// Attente d'une seconde
 	OSTimeDly(OS_TICKS_PER_SEC / 1);
@@ -82,22 +84,24 @@ static void thread_IHM (void *p_arg)
 				break;
 			case 'R' :
 				fprintf(fp_usart1, "Reset ! \r\n");
-				reset =true;
+				//reset =true;
+				set_cmd_res(1);
 				break;
 			case 'S':
 				fprintf(fp_usart1, "Set ! \r\n");
-				set=true;
+				set_cmd_set(1);
 				break;
 			case 'DE' :
 				fprintf(fp_usart1, "DEC ! \r\n");
-				DEC=DEC+1;
+				set_cmd_dec(1);
 				break;
 			case 'AC' :
 				fprintf(fp_usart1, "ACC ! \r\n");
-				ACC=ACC+1;
+				set_cmd_dec(1);
 				break;
 			case 'A' :
 				throttle = (param[0]-'0')*100+(param[1]-'0')*10+(param[2]-'0');
+				set_throttle(throttle);
 				break;
 			case 'B' :
 				breaks = (param[0]-'0')*100+(param[1]-'0')*10+(param[2]-'0');
@@ -121,5 +125,3 @@ static void thread_IHM (void *p_arg)
 		OSTimeDly(OS_TICKS_PER_SEC / 1);
 	}
 }
-
-

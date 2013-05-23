@@ -13,5 +13,5 @@
 #include <includes.h>
 #include "stm32f10x_includes.h"
 #include "model.h"
-
+void thread_IHM (void *p_arg);
 #endif /* THREAD_IHM_H_ */
