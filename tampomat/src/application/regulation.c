@@ -1,9 +1,11 @@
-/*
- * regulation.c
+/***********************************************************************
+ *  Speed regulation system
  *
- *  Created on: 3 mai 2013
- *      Author: William
- */
+ *	Filename      : regulation.c
+ *  Version       : V1.1
+ *  Programmer(s) : William Aebi, Christian Muller
+ *
+ ***********************************************************************/
 
 #define THROTTLE_SAT	45.0
 #define THROTTLE_ZERO	0.0

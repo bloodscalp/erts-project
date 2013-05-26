@@ -1,9 +1,11 @@
-/*
- * regulation.h
+/***********************************************************************
+ *  Speed regulation system
  *
- *  Created on: 3 mai 2013
- *      Author: William
- */
+ *	Filename      : regulation.h
+ *  Version       : V1.1
+ *  Programmer(s) : William Aebi, Christian Muller
+ *
+ ***********************************************************************/
 
 #ifndef REGULATION_H_
 #define REGULATION_H_
@@ -14,6 +16,7 @@
 #define KI				0.5
 
 #include <stdint.h>
+#include "stm32f10x_includes.h"
 
 enum statusReg_t {
 	reg_init,
@@ -34,11 +37,6 @@ enum statusThrottleCtrl_t {
 	proport_int,
 	proport_sat
 } statusThrottleCtrl;
-
-typedef enum bool_t {
-	false = 0,
-	true = 1
-} bool;
 
 float speed_sensor;
 uint8_t throttle,
