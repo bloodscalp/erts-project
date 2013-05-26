@@ -20,9 +20,11 @@
  * Definition de la tache
  *
  ************************************************************************/
+ 
+ 
  void thread_IHM (void *p_arg)
 {
-	 FILE *fp_usart1;
+	 FILE *fp_usart1;		// FIX ME ,GLOBALE OU PAS?
 	 static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
 	(void)p_arg;
 
@@ -85,19 +87,19 @@
 			case 'R' :
 				fprintf(fp_usart1, "Reset ! \r\n");
 				//reset =true;
-				set_cmd_res(1);
+				set_cmd_res(true);
 				break;
 			case 'S':
 				fprintf(fp_usart1, "Set ! \r\n");
-				set_cmd_set(1);
+				set_cmd_set(true);
 				break;
-			case 'DE' :
+			case 'DE' :// FIX ME --PEUT ETRE UTLISER QUE UNE LETTRE a teset
 				fprintf(fp_usart1, "DEC ! \r\n");
-				set_cmd_dec(1);
+				set_cmd_dec(true);
 				break;
 			case 'AC' :
 				fprintf(fp_usart1, "ACC ! \r\n");
-				set_cmd_dec(1);
+				set_cmd_dec(true);
 				break;
 			case 'A' :
 				throttle = (param[0]-'0')*100+(param[1]-'0')*10+(param[2]-'0');
@@ -125,3 +127,5 @@
 		OSTimeDly(OS_TICKS_PER_SEC / 1);
 	}
 }
+
+

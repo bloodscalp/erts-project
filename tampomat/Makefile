@@ -49,11 +49,11 @@ DIR_OUTPUT = ./out/
 # user software folder
 DIR_APPLICATION_INC = ./src/application/
 LIST_APPLICATION_SRC = ./src/application/app.c
+LIST_APPLICATION_SRC += ./src/application/getset.c
 #LIST_APPLICATION_SRC += ./src/application/model.c
 LIST_APPLICATION_SRC += ./src/application/regulation.c
 #LIST_APPLICATION_SRC += ./src/application/thread_car_model.c
-#LIST_APPLICATION_SRC += ./src/application/thread_ihm.c
-
+LIST_APPLICATION_SRC += ./src/application/thread_ihm.c
 #vpath %.c ./src/application/
 
 # user BSP (Board Support Package) folder
