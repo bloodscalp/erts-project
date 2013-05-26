@@ -14,8 +14,10 @@
 #define KI				0.5
 
 #include <stdint.h>
+#include "getset.h"
 
-enum statusReg_t {
+//Enum declaration in getset.h/getset.c now on
+/*enum statusReg_t {
 	reg_init,
 	on,
 	off,
@@ -50,7 +52,7 @@ bool 	cmd_on,
 		cmd_acc,
 		cmd_dec,
 		cmd_set,
-		cmd_res;
+		cmd_res;*/
 
 
 /* Function prototypes */

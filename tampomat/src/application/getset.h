@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#define PEDALS_MIN 		3 // 3% of the value of acc_sensor (0 to 100)
+
 typedef enum statusReg_t {
 	reg_init,
 	on,
