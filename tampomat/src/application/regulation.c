@@ -11,7 +11,7 @@
 #define THROTTLE_ZERO	0.0
 #define THROTTLE_STEP	1
 
-#define PEDALS_MIN 		0 //FIXME: put correct value
+//#define PEDALS_MIN 		0 //FIXME: put correct value
 #define SPEED_MAX		150 // km/h
 #define SPEED_MIN		30 	// km/h
 
@@ -30,7 +30,7 @@ void proport_integr(float cruise_speed, float speed_sensor)
 	pre_int = (cruise_speed - speed_sensor) + pre_int;
 }
 
-void proport(float cruise_speed, float speend_sensor)
+void proport(float cruise_speed, float speed_sensor)
 {
 	prop_act = KP * (cruise_speed - speed_sensor);
 	int_act = KI * (pre_int);

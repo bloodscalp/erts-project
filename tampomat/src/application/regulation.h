@@ -17,7 +17,10 @@
 
 #include <stdint.h>
 #include "stm32f10x_includes.h"
+#include "getset.h"
 
+//Enum declaration in getset.h/getset.c now on
+/*
 enum statusReg_t {
 	reg_init,
 	on,
@@ -49,6 +52,7 @@ bool 	cmd_on,
 		cmd_dec,
 		cmd_set,
 		cmd_res;
+*/
 
 
 /* Function prototypes */
