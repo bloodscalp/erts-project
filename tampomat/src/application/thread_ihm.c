@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 
+#include "app.h"
 #include "thread_ihm.h"
 #include "getset.h"
 
@@ -28,23 +29,21 @@
  
 void thread_ihm (void *p_arg)
 {
-	FILE *fp_usart1;		// FIX ME ,GLOBALE OU PAS?
-	static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
 
 	char cmd = '0';
 	char param[] = {'0','0', '0'};// paramètre pour le decomposer la commande de gaz ou break
 	uint8_t flag = 0;
-	uint8_t v = 0;
-	uint8_t v0 = 0;
+//	uint8_t v = 0;
+//	uint8_t v0 = 0;
 	uint8_t t = 0;
-	int8_t a = 0;
+//	int8_t a = 0;
 
 	//---Global Variable------------------------------
 	//change plac
 	uint8_t throttle = 0;
 	uint8_t breaks = 0;
-	uint8_t ACC =0;
-	uint8_t DEC = 0;
+//	uint8_t ACC =0;
+//	uint8_t DEC = 0;
 	//bool set=FALSE;
 	//bool reset=FALSE;
 	// attente de la commande de start pour démarrer
@@ -80,6 +79,8 @@ void thread_ihm (void *p_arg)
 			USART1_CNT_IN = 0;
 		}
 
+		fprintf(fp_usart1, "V%d", get_speed_sensor());
+
 		switch(cmd)
 		{
 			case '0' :
@@ -88,18 +89,17 @@ void thread_ihm (void *p_arg)
 				break;
 			case 'R' :
 				fprintf(fp_usart1, "Reset ! \r\n");
-				//reset =TRUE;
 				set_cmd_res(TRUE);
 				break;
 			case 'S':
 				fprintf(fp_usart1, "Set ! \r\n");
 				set_cmd_set(TRUE);
 				break;
-			case 'DE' :// FIX ME --PEUT ETRE UTLISER QUE UNE LETTRE a teset
+			case 'D' :
 				fprintf(fp_usart1, "DEC ! \r\n");
 				set_cmd_dec(TRUE);
 				break;
-			case 'AC' :
+			case 'U' :
 				fprintf(fp_usart1, "ACC ! \r\n");
 				set_cmd_dec(TRUE);
 				break;
@@ -109,6 +109,7 @@ void thread_ihm (void *p_arg)
 				break;
 			case 'B' :
 				breaks = (param[0]-'0')*100+(param[1]-'0')*10+(param[2]-'0');
+				set_dec_sensor(breaks);
 				break;
 			default :
 				break;
@@ -116,10 +117,8 @@ void thread_ihm (void *p_arg)
 
 		// si on a accelere ou freine, on modifie l'acceleration
 		if (cmd == 'A' || cmd == 'B') {
-
-				//for debug
-				fprintf(fp_usart1," THREAD IHM DETECTED THROTTLE¦¦ BREAKS breaks are: %d, throttle is: %d\r\n", breaks,throttle);
-
+			//for debug
+			fprintf(fp_usart1," THREAD IHM DETECTED THROTTLE¦¦ BREAKS breaks are: %d, throttle is: %d\r\n", breaks,throttle);
 		}
 
 		t++;

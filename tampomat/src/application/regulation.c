@@ -98,20 +98,20 @@ void throttle_control()
 
 	case proport_int:
 
-		proport_integr(get_cruise_speed(), get_speed_sensor()); // FIXME: no effect
+		proport_integr(get_cruise_speed(), get_speed_sensor());
 
 		sat_ctrl();
-		if(saturation){
+		if(get_saturation()){
 			set_statusThrottleCtrl(proport_sat);
 		}
 		break;
 
 	case proport_sat:
 
-		proport(get_cruise_speed(), get_speed_sensor()); // FIXME: no effect
+		proport(get_cruise_speed(), get_speed_sensor());
 
 		sat_ctrl();
-		if(!saturation){
+		if(!get_saturation()){
 			set_statusThrottleCtrl(proport_int);
 		}
 		break;

@@ -58,6 +58,9 @@ bool 	cmd_on,
 /* Function prototypes */
 void proport_integr(float cruise_speed, float speed_sensor);
 void proport(float cruise_speed, float speend_sensor);
-void sat_ctrl();
+void sat_ctrl(void);
+
+void regulation_init(void);
+void regultation_fsm(void);
 
 #endif /* REGULATION_H_ */
