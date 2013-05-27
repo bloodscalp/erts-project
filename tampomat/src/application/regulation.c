@@ -19,6 +19,7 @@
 #define KI				0.5
 
 #include "regulation.h"
+#include "stm32f10x_includes.h"
 
 static float prop_act, int_act, pre_int = 0.0, throttle_loc = 0.0;
 
@@ -38,34 +39,35 @@ void proport(float cruise_speed, float speed_sensor)
 	pre_int = (cruise_speed - speed_sensor);
 }
 
-void sat_ctrl(bool *saturation, float *throttle_l)
+void sat_ctrl()
 {
 	if (throttle_loc >= THROTTLE_SAT) {
-		*saturation = true;
-		*throttle_l = THROTTLE_SAT;
+		set_saturation(TRUE);
+		set_throttle(THROTTLE_SAT);
 	} else if (throttle_loc <= THROTTLE_ZERO) {
-		*saturation = true;
-		*throttle_l = THROTTLE_ZERO;
+		set_saturation(TRUE);
+		set_throttle(THROTTLE_ZERO);
 	} else {
-		*saturation = false;
-		*throttle_l = throttle_loc;
+		set_saturation(FALSE);
+		set_throttle(throttle_loc);
 	}
 }
 
 
 float setted_speed;
 
-void regulation_init() {
-	statusReg = reg_init;
-	statusRegOn = on_init;
-	statusThrottleCtrl = throttle_init;
+void regulation_init()
+{
+	set_statusReg(reg_init);
+	set_statusRegOn(on_init);
+	set_statusThrottleCtrl(throttle_init);
 }
 
 void on_fsm()
 {
-	switch(statusRegOn) {
+	switch(get_statusRegOn()) {
 	case on_init:
-		statusRegOn = setSpeed;
+		set_statusRegOn(setSpeed);
 		break;
 
 	case setSpeed:
@@ -78,37 +80,39 @@ void on_fsm()
 	}
 }
 
-void check_breaks() {
-	if(dec_sensor > PEDALS_MIN) {
-		statusReg = interrupted;
+void check_breaks()
+{
+	if(get_dec_sensor() > PEDALS_MIN) {
+		set_statusReg(interrupted);
 	}
 }
 
-void throttle_control() {
+void throttle_control()
+{
 	bool saturation;
 
-	switch (statusThrottleCtrl) {
+	switch (get_statusThrottleCtrl()) {
 	case throttle_init:
-		statusThrottleCtrl = proport_int;
+		set_statusThrottleCtrl(proport_int);
 		break;
 
 	case proport_int:
 
-		proport_integr(setted_speed, speed_sensor); // FIXME: no effect
+		proport_integr(get_cruise_speed(), get_speed_sensor()); // FIXME: no effect
 
-		sat_ctrl(&saturation, &throttle);
+		sat_ctrl();
 		if(saturation){
-			statusThrottleCtrl = proport_sat;
+			set_statusThrottleCtrl(proport_sat);
 		}
 		break;
 
 	case proport_sat:
 
-		proport(setted_speed, speed_sensor); // FIXME: no effect
+		proport(get_cruise_speed(), get_speed_sensor()); // FIXME: no effect
 
-		sat_ctrl(&saturation, &throttle);
+		sat_ctrl();
 		if(!saturation){
-			statusThrottleCtrl = proport_int;
+			set_statusThrottleCtrl(proport_int);
 		}
 		break;
 	}
@@ -118,10 +122,10 @@ void throttle_control() {
 void regultation_fsm()
 {
 
-	switch (statusReg) {
+	switch (get_statusReg()) {
 	case reg_init:
 		setted_speed = 0;
-		statusReg = off;
+		set_statusReg(off);
 		break;
 
 
@@ -130,16 +134,15 @@ void regultation_fsm()
 
 		/* Adapt regulation to reach cruise speed */
 
-		if(speed_sensor < setted_speed)
-			throttle += THROTTLE_STEP;
-		else if(speed_sensor > setted_speed)
-			throttle -= THROTTLE_STEP;
+		if(get_speed_sensor() < get_cruise_speed())
+			set_throttle(get_throttle()+THROTTLE_STEP);
+		else if(get_speed_sensor() > get_cruise_speed())
+			set_throttle(get_throttle()-THROTTLE_STEP);
 
 		// ON FSM
 		/* Set new cruise speed on command detection */
-		if(cmd_set) {
-			cmd_set = 0; // FIXME: get mutex
-			setted_speed = speed_sensor;
+		if(get_cmd_set()) {
+			set_cruise_speed(get_speed_sensor());
 		}
 
 		on_fsm();
@@ -147,14 +150,13 @@ void regultation_fsm()
 		// END ON FSM
 
 		/* Disable regulation on command detection */
-		if(cmd_off) {
-			cmd_off = 0; // FIXME: get mutex
-			statusReg = off;
+		if(get_cmd_off()) {
+			set_statusReg(off);
 		}
 
 		/* Go standby if pedal is pushed or car speed is out of range */
-		if(acc_sensor > PEDALS_MIN || speed_sensor > SPEED_MAX || speed_sensor < SPEED_MIN) {
-			statusReg = standby;
+		if(get_acc_sensor() > PEDALS_MIN || get_speed_sensor() > SPEED_MAX || get_speed_sensor() < SPEED_MIN) {
+			set_statusReg(standby);
 		}
 
 		break;
@@ -162,9 +164,8 @@ void regultation_fsm()
 	case off:
 
 		/* Enable regulation on command detection */
-		if(cmd_on) {
-			cmd_on = 0; // FIXME: get mutex
-			statusReg = on;
+		if(get_cmd_on()) {
+			set_statusReg(on);
 			setted_speed = 0;
 		}
 
@@ -174,17 +175,16 @@ void regultation_fsm()
 		check_breaks();
 
 		/* Go back to on if pedals are released or car speed is in range again */
-		if(acc_sensor<=PEDALS_MIN && speed_sensor<=SPEED_MAX && speed_sensor >= SPEED_MIN) {
-			statusReg = on;
+		if(get_acc_sensor() <= PEDALS_MIN && get_speed_sensor() <= SPEED_MAX && get_speed_sensor() >= SPEED_MIN) {
+			set_statusReg(on);
 		}
 		break;
 
 	case interrupted:
 		/* Enable regulation on command detection */
-		if(cmd_res) {
-			cmd_res = 0; // FIXME: get mutex
-			statusReg = on;
-		}
+		if(get_cmd_res())
+			set_statusReg(on);
+
 		break;
 	}
 }

@@ -13,7 +13,8 @@ statusRegOn statusRegOn_i;
 
 statusThrottleCtrl statusThrottleCtrl_i;
 
-float speed_sensor;
+float 	speed_sensor,
+		cruise_speed;
 
 uint8_t throttle,
 		acc_sensor,
@@ -24,7 +25,8 @@ bool 	cmd_on,
 		cmd_acc,
 		cmd_dec,
 		cmd_set,
-		cmd_res;
+		cmd_res,
+		saturation;
 
 void set_statusReg(statusReg status){
 	statusReg_i = status;
@@ -54,6 +56,27 @@ float get_speed_sensor(void){
 	return speed_sensor;
 }
 
+void set_cruise_speed(float speed)
+{
+	cruise_speed = speed;
+}
+
+float get_cruise_speed(void)
+{
+	return cruise_speed;
+}
+
+
+void set_saturation(bool saturation)
+{
+	saturation = saturation;
+}
+
+uint8_t get_saturation(void)
+{
+	return saturation;
+}
+
 void set_throttle(uint8_t throttle){
 	throttle = throttle;
 }
@@ -79,41 +102,59 @@ void set_cmd_on(bool cmd){
 	cmd_on = cmd;
 }
 bool get_cmd_on(void){
-	return cmd_on;
+	int tmp;
+	tmp = cmd_on;
+	cmd_on = 0;
+	return tmp;
 }
 
 void set_cmd_off(bool cmd){
 	cmd_off = cmd;
 }
 bool get_cmd_off(void){
-	return cmd_off;
+	int tmp;
+	tmp = cmd_off;
+	cmd_off = 0;
+	return tmp;
 }
 
 void set_cmd_acc(bool cmd){
 	cmd_acc = cmd;
 }
 bool get_cmd_acc(void){
-	return cmd_acc;
+	int tmp;
+	tmp = cmd_acc;
+	cmd_acc = 0;
+	return tmp;
 }
 
 void set_cmd_dec(bool cmd){
 	cmd_dec = cmd;
 }
 bool get_cmd_dec(void){
-	return cmd_dec;
+	int tmp;
+	tmp = cmd_dec;
+	cmd_dec = 0;
+	return tmp;
 }
 
 void set_cmd_set(bool cmd){
 	cmd_set = cmd;
 }
 bool get_cmd_set(void){
-	return cmd_set;
+	int tmp;
+	tmp = cmd_set;
+	cmd_set = 0;
+	return tmp;
 }
 
 void set_cmd_res(bool cmd){
 	cmd_res = cmd;
 }
 bool get_cmd_res(void){
-	return cmd_res;
+	int tmp;
+	tmp = cmd_res;
+	cmd_res = 0;
+	return tmp;
 }
 

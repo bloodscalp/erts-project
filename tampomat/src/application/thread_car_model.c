@@ -8,12 +8,17 @@
  *  Version       : V1.1
  *  Programmer(s) : Gregoire Hagmann
  ***********************************************************************/
+#include <stdint.h>
+
+#include "stm32f10x_includes.h"
+
 #include "thread_car_model.h"
+#include "getset.h"
+#include "model.h"
 
-static void thread_car_model (void *p_arg)
+
+void thread_car_model (void *p_arg)
 {
-	(void)p_arg;
-
 	//pedals: 0% to 100%
 	uint8_t breaks_sim;
 	uint8_t throttle_sim;
@@ -31,7 +36,7 @@ static void thread_car_model (void *p_arg)
 
 		//Update the speed of the car according to the pedals/regulator
 		speed_sensor=get_speed_sensor();
-		simulation(&speed_sensor, breaks_sim, throttle_sim);
+		car_simulation(&speed_sensor, breaks_sim, throttle_sim);
 		set_speed_sensor(speed_sensor);
 
 		OSTimeDly(prochaine_echeance-OSTimeGet());

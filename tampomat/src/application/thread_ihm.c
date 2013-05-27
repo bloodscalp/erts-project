@@ -13,8 +13,12 @@
 
 // Stack de la tache
 //
+
+#include <stdio.h>
+
 #include "thread_ihm.h"
 #include "getset.h"
+
 /************************************************************************
  *
  * Definition de la tache
@@ -22,12 +26,10 @@
  ************************************************************************/
  
  
- void thread_IHM (void *p_arg)
+void thread_ihm (void *p_arg)
 {
-	 FILE *fp_usart1;		// FIX ME ,GLOBALE OU PAS?
-	 static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
-	(void)p_arg;
-
+	FILE *fp_usart1;		// FIX ME ,GLOBALE OU PAS?
+	static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
 
 	char cmd = '0';
 	char param[] = {'0','0', '0'};// paramètre pour le decomposer la commande de gaz ou break
@@ -43,8 +45,8 @@
 	uint8_t breaks = 0;
 	uint8_t ACC =0;
 	uint8_t DEC = 0;
-	//bool set=false;
-	//bool reset=false;
+	//bool set=FALSE;
+	//bool reset=FALSE;
 	// attente de la commande de start pour démarrer
 	while (cmd != '1') {
 		// scrute les entrees
@@ -86,20 +88,20 @@
 				break;
 			case 'R' :
 				fprintf(fp_usart1, "Reset ! \r\n");
-				//reset =true;
-				set_cmd_res(true);
+				//reset =TRUE;
+				set_cmd_res(TRUE);
 				break;
 			case 'S':
 				fprintf(fp_usart1, "Set ! \r\n");
-				set_cmd_set(true);
+				set_cmd_set(TRUE);
 				break;
 			case 'DE' :// FIX ME --PEUT ETRE UTLISER QUE UNE LETTRE a teset
 				fprintf(fp_usart1, "DEC ! \r\n");
-				set_cmd_dec(true);
+				set_cmd_dec(TRUE);
 				break;
 			case 'AC' :
 				fprintf(fp_usart1, "ACC ! \r\n");
-				set_cmd_dec(true);
+				set_cmd_dec(TRUE);
 				break;
 			case 'A' :
 				throttle = (param[0]-'0')*100+(param[1]-'0')*10+(param[2]-'0');

@@ -9,6 +9,7 @@
 #define GETSET_H_
 
 #include <stdint.h>
+#include "stm32f10x_includes.h"
 
 #define PEDALS_MIN 		3 // 3% of the value of acc_sensor (0 to 100)
 
@@ -32,10 +33,10 @@ typedef enum statusThrottleCtrl_t {
 	proport_sat
 } statusThrottleCtrl;
 
-typedef enum bool_t {
-	false = 0,
-	true = 1
-} bool;
+//typedef enum bool_t {
+//	false = 0,
+//	true = 1
+//} bool;
 
 
 void set_statusReg(statusReg status);
@@ -49,6 +50,12 @@ statusThrottleCtrl get_statusThrottleCtrl(void);
 
 void set_speed_sensor(float speed);
 float get_speed_sensor(void);
+
+void set_cruise_speed(float speed);
+float get_cruise_speed(void);
+
+void set_saturation(bool saturation);
+uint8_t get_saturation(void);
 
 void set_throttle(uint8_t throttle);
 uint8_t get_throttle(void);

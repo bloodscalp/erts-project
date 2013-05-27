@@ -11,9 +11,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <includes.h>
+
 #include "stm32f10x_includes.h"
-#include "model.c"
-#include "thread_car_model.c"
+
+#include "model.h"
+#include "thread_car_model.h"
+#include "thread_ihm.h"
 
 /************************************************************************
  *
@@ -55,6 +58,9 @@ float speed;
  * Definition de la tache
  *
  ************************************************************************/
+
+
+#if 0
 static void thread_ihm (void *p_arg)
 {
 
@@ -135,7 +141,7 @@ static void thread_ihm (void *p_arg)
 				//v0 = v;
 				//t = 0;
 				//fprintf(fp_usart1, "accelleratrion T%d\r\n",a);
-				simulation(&speed, breaks, throttle);
+				car_simulation(&speed, breaks, throttle);
 				fprintf(fp_usart1, "sortie de %d\r\n ",a);
 				fprintf(fp_usart1,"breaks are: %d, throttle is: %d, speed is: %f\r\n", breaks,throttle,speed);
 
@@ -165,6 +171,7 @@ static void thread_ihm (void *p_arg)
 		OSTimeDly(OS_TICKS_PER_SEC / 1);
 	}
 }
+#endif /* 0 */
 
 /************************************************************************
  *
@@ -185,30 +192,31 @@ static void thread_regulation (void *p_arg)
  * Initialisation tick et des taches
  *
  ***********************************************************************/
-void initialise_taches (void) {
+void initialise_taches (void)
+{
 	// Init Sys. Tick
 	OS_CPU_SysTickInit();
 	#if OS_TASK_STAT_EN > 0
 		OSStatInit();
 	#endif
 
-	int i=0;
-	OSTaskCreate(thread_ihm, (void *)i,
-				init_pile(pileTache[i], TAILLE_PILE_TACHE),
-				PRIORITE_TACHE+i);
-	i=1;
-	OSTaskCreate(thread_regulation, (void *)i,
-				init_pile(pileTache[i], TAILLE_PILE_TACHE),
-				PRIORITE_TACHE+i);
+	OSTaskCreate(thread_ihm, NULL,
+				init_pile(pileTache[0], TAILLE_PILE_TACHE),
+				PRIORITE_TACHE);
 
-	i=2;
-	OSTaskCreate(thread_car_model, (void *)i,
-				init_pile(pileTache[i], TAILLE_PILE_TACHE),
-				PRIORITE_TACHE+i);
+	OSTaskCreate(thread_regulation, NULL,
+				init_pile(pileTache[1], TAILLE_PILE_TACHE),
+				PRIORITE_TACHE+1);
+
+	OSTaskCreate(thread_car_model, NULL,
+				init_pile(pileTache[2], TAILLE_PILE_TACHE),
+				PRIORITE_TACHE+2);
+
 	OSTaskDel(OS_PRIO_SELF);
 }
 
-void init_cible_ntrt(void) {
+void init_cible_ntrt(void)
+{
 	BSP_IntDisAll(); 	// Desactivation des interruptions
 	OSInit(); 			// Initialisation de uCosII
 	BSP_IntEnAll(); 	// Activation des interruptions
@@ -227,6 +235,7 @@ void init_cible_ntrt(void) {
 int main (void)
 {
 	init_cible_ntrt();
+
 	OSTaskCreate(initialise_taches, (void *)0,
 					init_pile(pileTache[MAX_TASKS], TAILLE_PILE_TACHE),
 					PRIORITE_TACHE+MAX_TASKS);

@@ -16,6 +16,6 @@
 #define MASSE			1450.0f
 #define TORK_MAX		400.0f
 
-void simulation(float *speed_sensor, float dec_sensor, float throttle);
+void car_simulation(float *speed_sensor, float dec_sensor, float throttle);
 
 #endif /* MODEL_H_ */

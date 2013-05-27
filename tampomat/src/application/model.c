@@ -14,7 +14,8 @@
 #define TORK_MAX		400.0f*/
 
 #include "model.h"
-void simulation(float *speed_sensor, float dec_sensor, float throttle){
+
+void car_simulation(float *speed_sensor, float dec_sensor, float throttle){
 	static float pre_speed = 0.0f;
 	static float torq;
 	float a, b, c, d, e, f, g, h, x;
