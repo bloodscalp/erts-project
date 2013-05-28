@@ -19,6 +19,7 @@
 
 void thread_car_model (void *p_arg)
 {
+	(void)p_arg;
 	//pedals: 0% to 100%
 	uint8_t breaks_sim;
 	uint8_t throttle_sim;

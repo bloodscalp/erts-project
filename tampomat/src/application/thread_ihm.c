@@ -29,7 +29,7 @@
  
 void thread_ihm (void *p_arg)
 {
-
+	(void)p_arg;
 	char cmd = '0';
 	char param[] = {'0','0', '0'};// paramètre pour le decomposer la commande de gaz ou break
 
@@ -123,7 +123,8 @@ void thread_ihm (void *p_arg)
 				throttle = (param[0]-'0')*100+(param[1]-'0')*10+(param[2]-'0');
 
 				//fprintf(fp_usart1, "V%03u\r\n",(unsigned int)(throttle));
-				set_throttle(throttle);
+				set_acc_sensor(throttle);
+				//set_throttle(throttle);
 				break;
 			case 'B' :
 				breaks = (param[0]-'0')*100+(param[1]-'0')*10+(param[2]-'0');
