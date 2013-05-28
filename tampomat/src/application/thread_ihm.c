@@ -45,7 +45,6 @@ void thread_ihm (void *p_arg)
 	//change plac
 	uint8_t throttle = 0;
 	uint8_t breaks = 0;
-	set_speed_sensor(throttle);
 //	uint8_t ACC =0;
 //	uint8_t DEC = 0;
 	//bool set=FALSE;
@@ -72,7 +71,7 @@ void thread_ihm (void *p_arg)
 
 	// Attente d'une seconde
 	fprintf(fp_usart1,"S1\r\n");
-	OSTimeDly(OS_TICKS_PER_SEC / 1);
+	OSTimeDly(OS_TICKS_PER_SEC / 10);
 
 	while (flag) {
 
@@ -89,53 +88,40 @@ void thread_ihm (void *p_arg)
 			USART1_CNT_IN = 0;
 		}
 		//fprintf(fp_usart1, "T%03u\r\n",(unsigned int)(get_throttle()));
-
-		// FIXME
-		/*switch(get_statusRegOn())
-		{
-			case 'on' :
-				fprintf(fp_usart1, "S1\r\n");
-				break;
-			case 'standby' :
-				fprintf(fp_usart1, "SS\r\n");
-				break;
-			case 'interrupted':
-				fprintf(fp_usart1, "SI\r\n");
-				break;
-			default :
-				fprintf(fp_usart1, "status off\r\n");
-				break;
-		}*/
-
-
-
 		//fprintf(fp_usart1, "V%03u\r\n",(unsigned int)(get_speed_sensor()));
 		switch(cmd)
 		{
 			case '0' :
 				fprintf(fp_usart1, "S0\r\n");
+				OSTimeDly(OS_TICKS_PER_SEC / 10);
+
 				flag = 0;
 				break;
 			case 'R' :
 				fprintf(fp_usart1, "Reset ! \r\n");
 				set_cmd_res(TRUE);
+				OSTimeDly(OS_TICKS_PER_SEC / 10);
+
+
 				break;
 			case 'S':
 				fprintf(fp_usart1, "Set ! \r\n");
 				set_cmd_set(TRUE);
+				OSTimeDly(OS_TICKS_PER_SEC / 10);
 				break;
 			case 'D' :
 				fprintf(fp_usart1, "DEC ! \r\n");
 				set_cmd_dec(TRUE);
+				OSTimeDly(OS_TICKS_PER_SEC / 10);
 				break;
 			case 'U' :
 				fprintf(fp_usart1, "ACC ! \r\n");
 				set_cmd_dec(TRUE);
+				OSTimeDly(OS_TICKS_PER_SEC / 10);
 				break;
 			case 'A' :
 				throttle = (param[0]-'0')*100+(param[1]-'0')*10+(param[2]-'0');
 
-				OSTimeDly(OS_TICKS_PER_SEC / 1);
 				//fprintf(fp_usart1, "V%03u\r\n",(unsigned int)(throttle));
 				set_throttle(throttle);
 				break;
@@ -157,6 +143,30 @@ void thread_ihm (void *p_arg)
 		{
 			fprintf(fp_usart1, "V%03u\r\n",(unsigned int)(get_speed_sensor()));
 			//printf("%f",get_speed_sensor());
+		}
+		OSTimeDly(OS_TICKS_PER_SEC / 10);
+		// FIXME
+		switch (get_statusReg()) {
+
+		case on:
+			fprintf(fp_usart1,"S1\r\n");
+			break;
+
+		case off:
+			fprintf(fp_usart1,"S0\r\n");
+			break;
+
+		case standby:
+			fprintf(fp_usart1,"SS\r\n");
+
+			break;
+
+		case interrupted:
+			fprintf(fp_usart1,"SI\r\n");
+
+			break;
+		default :
+			break;
 		}
 
 		t++;

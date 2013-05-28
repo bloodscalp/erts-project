@@ -54,10 +54,10 @@ float get_speed_sensor(void);
 void set_cruise_speed(float speed);
 float get_cruise_speed(void);
 
-void set_saturation(bool saturation);
+void set_saturation(bool saturation_param);
 uint8_t get_saturation(void);
 
-void set_throttle(uint8_t throttle);
+void set_throttle(uint8_t throttle_param);
 uint8_t get_throttle(void);
 
 void set_acc_sensor(uint8_t acc);

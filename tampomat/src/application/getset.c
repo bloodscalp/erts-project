@@ -16,7 +16,7 @@ statusThrottleCtrl statusThrottleCtrl_i;
 float 	speed_sensor,
 		cruise_speed;
 
-uint8_t throttle,
+uint8_t throttle_g,
 		acc_sensor,
 		dec_sensor;
 
@@ -67,9 +67,9 @@ float get_cruise_speed(void)
 }
 
 
-void set_saturation(bool saturation)
+void set_saturation(bool saturation_param)
 {
-	saturation = saturation;
+	saturation = saturation_param;
 }
 
 uint8_t get_saturation(void)
@@ -77,11 +77,11 @@ uint8_t get_saturation(void)
 	return saturation;
 }
 
-void set_throttle(uint8_t throttle){
-	throttle = throttle;
+void set_throttle(uint8_t throttle_param){
+	throttle_g = throttle_param;
 }
 uint8_t get_throttle(void){
-	return throttle;
+	return throttle_g;
 }
 
 void set_acc_sensor(uint8_t acc){
