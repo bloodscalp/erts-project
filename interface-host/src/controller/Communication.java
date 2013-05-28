@@ -86,7 +86,7 @@ public class Communication implements SerialPortEventListener {
 									}
                 				}
 								try {
-									Thread.sleep(1000);
+									Thread.sleep(90);
 								} catch (InterruptedException e) {
 									e.printStackTrace();
 								}
