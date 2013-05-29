@@ -49,7 +49,7 @@ DIR_OUTPUT = ./out/
 # user software folder
 DIR_APPLICATION_INC = ./src/application/
 LIST_APPLICATION_SRC += ./src/application/app.c
-LIST_APPLICATION_SRC += ./src/application/getset.c
+LIST_APPLICATION_SRC += ./src/application/globals.c
 LIST_APPLICATION_SRC += ./src/application/model.c
 LIST_APPLICATION_SRC += ./src/application/regulation.c
 LIST_APPLICATION_SRC += ./src/application/thread_ihm.c

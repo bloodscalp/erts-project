@@ -1,11 +1,22 @@
 /*
- * getset.c
+ * globals.c
  *
  *  Created on: 13 mai 2013
  *      Author: William
  */
 
-#include "getset.h"
+#include "globals.h"
+
+#define MUTEX_PRIO 4
+
+/* Declaration of the mutexes */
+OS_EVENT  	*cmd_on_mutex,
+			*cmd_off_mutex,
+			*cmd_acc_mutex,
+			*cmd_dec_mutex,
+			*cmd_set_mutex,
+			*cmd_res_mutex,
+			*saturation_mutex;
 
 statusReg statusReg_i;
 
@@ -87,6 +98,7 @@ uint8_t get_throttle(void){
 void set_acc_sensor(uint8_t acc){
 	acc_sensor = acc;
 }
+
 uint8_t get_acc_sensor(void){
 	return acc_sensor;
 }

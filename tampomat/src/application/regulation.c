@@ -11,17 +11,136 @@
 #define THROTTLE_ZERO	0.0
 #define THROTTLE_STEP	1
 
-//#define PEDALS_MIN 		0 //FIXME: put correct value
-#define SPEED_MAX		150 // km/h
-#define SPEED_MIN		30 	// km/h
+#define CRUISE_SPEED_MAX		150 // km/h
+#define CRUISE_SPEED_MIN		30 	// km/h
+#define CRUISE_SPEED_STEP 5
 
 #define KP				8.113
 #define KI				0.5
 
+
 #include "regulation.h"
 #include "stm32f10x_includes.h"
+#include "globals.h"
 
-static float prop_act, int_act, pre_int = 0.0, throttle_loc = 0.0;
+float 	prop_act,
+		int_act,
+		pre_int,
+		throttle_loc,
+		regulation_throttle;
+
+/* Function prototypes */
+void regulation_init(void);
+void regultation_fsm(void);
+void check_breaks(void);
+void proport_integr(float cruise_speed, float speed_sensor);
+void proport(float cruise_speed, float speend_sensor);
+void sat_ctrl(void);
+void on_fsm(void);
+void throttle_control(void);
+
+void regulation_init()
+{
+	prop_act = 0.0;
+	int_act = 0.0;
+	pre_int = 0.0;
+	throttle_loc = 0.0;
+	regulation_throttle  = 0.0;
+
+	set_statusReg(reg_init);
+	set_statusRegOn(on_init);
+	set_statusThrottleCtrl(throttle_init);
+}
+
+/* This FMS manages the global car speed regulation */
+void regultation_fsm()
+{
+
+	switch (get_statusReg()) {
+	case reg_init:
+		set_cruise_speed(0);
+		set_statusReg(off);
+		break;
+
+
+	case on:
+
+		on_fsm();
+
+		/* Go in interruption mode if breaks hit */
+		check_breaks();
+
+		/* Disable regulation on command detection */
+		if(get_cmd_off()) {
+			set_statusReg(off);
+		}
+
+		/* Go standby if pedal is pushed or car speed is out of range */
+		if(get_acc_sensor() > PEDALS_MIN || get_speed_sensor() > CRUISE_SPEED_MAX || get_speed_sensor() < CRUISE_SPEED_MIN) {
+			set_statusReg(standby);
+		}
+
+
+		/* Throttle control sub FSM */
+		throttle_control();
+
+		break;
+
+	case off:
+
+		regulation_throttle = 0;
+
+		/* Enable regulation on command detection */
+		if(get_cmd_on()) {
+			set_statusReg(on);
+			set_cruise_speed(0);
+		}
+
+		break;
+
+	case standby:
+
+		regulation_throttle = 0;
+
+		/* Go in interruption mode if breaks hit */
+		check_breaks();
+
+		/* Set new cruise speed on command detection */
+		if(get_cmd_set()) {
+			set_cruise_speed(get_speed_sensor());
+		}
+
+		/* Go back to on if pedals are released or car speed is in range again */
+		if(get_acc_sensor() <= PEDALS_MIN && get_speed_sensor() <= CRUISE_SPEED_MAX && get_speed_sensor() >= CRUISE_SPEED_MIN) {
+			set_statusReg(on);
+		}
+		break;
+
+	case interrupted:
+		regulation_throttle = 0;
+
+		/* Set new cruise speed on command detection */
+		if(get_cmd_set()) {
+			set_cruise_speed(get_speed_sensor());
+			set_statusReg(on);
+		}
+
+		/* Enable regulation on command detection */
+		if(get_cmd_res())
+			set_statusReg(on);
+
+		break;
+	}
+}
+
+
+void check_breaks()
+{
+	if(get_dec_sensor() > PEDALS_MIN) {
+		set_statusReg(interrupted);
+	}
+}
+
 
 void proport_integr(float cruise_speed, float speed_sensor)
 {
@@ -43,24 +162,14 @@ void sat_ctrl()
 {
 	if (throttle_loc >= THROTTLE_SAT) {
 		set_saturation(TRUE);
-		set_throttle(THROTTLE_SAT);
+		regulation_throttle = THROTTLE_SAT;
 	} else if (throttle_loc <= THROTTLE_ZERO) {
 		set_saturation(TRUE);
-		set_throttle(THROTTLE_ZERO);
+		regulation_throttle = THROTTLE_ZERO;
 	} else {
 		set_saturation(FALSE);
-		set_throttle(throttle_loc);
+		regulation_throttle = throttle_loc;
 	}
-}
-
-
-float setted_speed;
-
-void regulation_init()
-{
-	set_statusReg(reg_init);
-	set_statusRegOn(on_init);
-	set_statusThrottleCtrl(throttle_init);
 }
 
 void on_fsm()
@@ -71,120 +180,75 @@ void on_fsm()
 		break;
 
 	case setSpeed:
-
-		break;
-
-	case blocked:
-
-		break;
-	}
-}
-
-void check_breaks()
-{
-	if(get_dec_sensor() > PEDALS_MIN) {
-		set_statusReg(interrupted);
-	}
-}
-
-void throttle_control()
-{
-	bool saturation;
-
-	switch (get_statusThrottleCtrl()) {
-	case throttle_init:
-		set_statusThrottleCtrl(proport_int);
-		break;
-
-	case proport_int:
-
-		proport_integr(get_cruise_speed(), get_speed_sensor());
-
-		sat_ctrl();
-		if(get_saturation()){
-			set_statusThrottleCtrl(proport_sat);
-		}
-		break;
-
-	case proport_sat:
-
-		proport(get_cruise_speed(), get_speed_sensor());
-
-		sat_ctrl();
-		if(!get_saturation()){
-			set_statusThrottleCtrl(proport_int);
-		}
-		break;
-	}
-}
-
-/* This FMS manages the global car speed regulation */
-void regultation_fsm()
-{
-
-	switch (get_statusReg()) {
-	case reg_init:
-		setted_speed = 0;
-		set_statusReg(off);
-		break;
-
-
-	case on:
-		check_breaks();
-
-		/* Adapt regulation to reach cruise speed */
-
-		if(get_speed_sensor() < get_cruise_speed())
-			set_throttle(get_throttle()+THROTTLE_STEP);
-		else if(get_speed_sensor() > get_cruise_speed())
-			set_throttle(get_throttle()-THROTTLE_STEP);
-
-		// ON FSM
 		/* Set new cruise speed on command detection */
 		if(get_cmd_set()) {
 			set_cruise_speed(get_speed_sensor());
 		}
 
-		on_fsm();
-
-		// END ON FSM
-
-		/* Disable regulation on command detection */
-		if(get_cmd_off()) {
-			set_statusReg(off);
+		/* Increase cruise speed by one step */
+		if(get_cmd_acc()) {
+			set_cruise_speed(get_cruise_speed()+CRUISE_SPEED_STEP);
 		}
 
-		/* Go standby if pedal is pushed or car speed is out of range */
-		if(get_acc_sensor() > PEDALS_MIN || get_speed_sensor() > SPEED_MAX || get_speed_sensor() < SPEED_MIN) {
-			set_statusReg(standby);
+		/* Decrease cruise speed by one step */
+		if(get_cmd_dec()) {
+			set_cruise_speed(get_cruise_speed()-CRUISE_SPEED_STEP);
 		}
+
+		/*  */
+		if(get_cruise_speed() >= CRUISE_SPEED_MAX || get_cruise_speed() <= CRUISE_SPEED_MIN)
+			set_statusRegOn(blocked);
 
 		break;
 
-	case off:
-
-		/* Enable regulation on command detection */
-		if(get_cmd_on()) {
-			set_statusReg(on);
-			setted_speed = 0;
-		}
-
+	case blocked:
+		if(get_cruise_speed() < CRUISE_SPEED_MAX || get_cruise_speed() < CRUISE_SPEED_MIN)
+			set_statusRegOn(setSpeed);
 		break;
+	}
+}
 
-	case standby:
-		check_breaks();
+void throttle_control()
+{
+	switch (get_statusThrottleCtrl()) {
+		case throttle_init:
+			set_statusThrottleCtrl(proport_int);
+			break;
 
-		/* Go back to on if pedals are released or car speed is in range again */
-		if(get_acc_sensor() <= PEDALS_MIN && get_speed_sensor() <= SPEED_MAX && get_speed_sensor() >= SPEED_MIN) {
-			set_statusReg(on);
-		}
-		break;
+		case proport_int:
+			proport_integr(get_cruise_speed(), get_speed_sensor());
 
-	case interrupted:
-		/* Enable regulation on command detection */
-		if(get_cmd_res())
-			set_statusReg(on);
+			if(get_saturation()){
+				set_statusThrottleCtrl(proport_sat);
+			}
+			break;
 
-		break;
+		case proport_sat:
+			proport(get_cruise_speed(), get_speed_sensor());
+
+			if(!get_saturation()){
+				set_statusThrottleCtrl(proport_int);
+			}
+			break;
+	}
+
+	sat_ctrl();
+}
+
+float get_regulation_throttle() {
+	return regulation_throttle;
+}
+
+void thread_regulation(void *p_arg)
+{
+	(void)p_arg;
+	regulation_init();
+
+	int next_deadline = OSTimeGet()+CST_PERIOD_CAR_MODEL;
+	while (1) {
+		regultation_fsm();
+
+		OSTimeDly(next_deadline-OSTimeGet());
+		next_deadline += CST_PERIOD_REGULATION;
 	}
 }

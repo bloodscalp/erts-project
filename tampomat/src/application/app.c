@@ -53,22 +53,6 @@ void initialise_taches (void);
 
 
 float speed;
-/************************************************************************
- *
- * Definition de la tache
- *
- ************************************************************************/
-static void thread_regulation (void *p_arg)
-{
-	(void)p_arg;
-	regulation_init();
-
-	while (1) {
-		regultation_fsm();
-		OSTimeDly(OS_TICKS_PER_SEC);
-	}
-}
-
 
 /************************************************************************
  *

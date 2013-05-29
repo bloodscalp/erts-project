@@ -1,15 +1,18 @@
 /*
- * getset.h
+ * globals.h
  *
  *  Created on: 13 mai 2013
  *      Author: William
  */
 
-#ifndef GETSET_H_
-#define GETSET_H_
+#ifndef GLOBALS_H_
+#define GLOBALS_H_
 
 #include <stdint.h>
 #include "stm32f10x_includes.h"
+
+#define CST_PERIOD_REGULATION OS_TICKS_PER_SEC/20	// 20Hz, 50ms
+#define CST_PERIOD_CAR_MODEL  OS_TICKS_PER_SEC/20	// 20Hz, 50ms
 
 #define PEDALS_MIN 		3 // 3% of the value of acc_sensor (0 to 100)
 
@@ -32,11 +35,6 @@ typedef enum statusThrottleCtrl_t {
 	proport_int,
 	proport_sat
 } statusThrottleCtrl;
-
-//typedef enum bool_t {
-//	false = 0,
-//	true = 1
-//} bool;
 
 
 void set_statusReg(statusReg status);
@@ -85,4 +83,4 @@ void set_cmd_res(bool cmd);
 bool get_cmd_res(void);
 
 
-#endif /* GETSET_H_ */
+#endif /* GLOBALS_H_ */
