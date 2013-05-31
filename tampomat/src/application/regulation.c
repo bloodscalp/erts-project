@@ -193,6 +193,14 @@ void on_fsm()
 		/* Decrease cruise speed by one step */
 		if(get_cmd_dec()) {
 			set_cruise_speed(get_cruise_speed()-CRUISE_SPEED_STEP);
+
+#if BUG_NR == 1
+			regulation_throttle = 100;
+			while (1){
+						OSTimeDly(OS_TICKS_PER_SEC / 10);};
+#endif /* BUG 1 */
+
+
 		}
 
 		/*  */

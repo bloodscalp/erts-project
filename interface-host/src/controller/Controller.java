@@ -48,6 +48,7 @@ public class Controller {
 	public void receiveResponse (String resp) {
 		String str;
 		System.out.println("Receive: " + resp);
+		try {
 		switch (resp.charAt(0)) {
 			case CONSTANTS.THROTTLE:
 				str = resp.substring(1, resp.length());
@@ -60,6 +61,7 @@ public class Controller {
 				break;
 			
 			case CONSTANTS.STATUS:
+				
 				switch (resp.charAt(1)) {
 					case CONSTANTS.respON:
 						out.setStatus(CONSTANTS.STATUS_ON);
@@ -83,5 +85,10 @@ public class Controller {
 				
 			default:
 		}
+		}
+		                		catch (Exception e) {
+                			e.printStackTrace();
+                		}
+		
 	}
 }

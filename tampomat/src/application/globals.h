@@ -13,7 +13,7 @@
 
 #define CST_PERIOD_REGULATION OS_TICKS_PER_SEC/20	// 20Hz, 50ms
 #define CST_PERIOD_CAR_MODEL  OS_TICKS_PER_SEC/20	// 20Hz, 50ms
-
+#define BUG_NR 0
 #define PEDALS_MIN 		3 // 3% of the value of acc_sensor (0 to 100)
 
 typedef enum statusReg_t {

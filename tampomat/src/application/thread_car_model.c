@@ -36,8 +36,11 @@ void thread_car_model (void *p_arg)
 		set_throttle(throttle_sim);
 
 		breaks_sim = get_dec_sensor();
-		if (breaks_sim < PEDALS_MIN)
+		if (breaks_sim < PEDALS_MIN){
 			breaks_sim = 0;
+			//Si on appuie sur les freins la FSm perds le controle
+		}
+		else 			throttle_sim = get_acc_sensor();
 
 		//Update the speed of the car according to the pedals/regulator
 		speed_sensor = get_speed_sensor();
