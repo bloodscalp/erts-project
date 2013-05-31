@@ -115,13 +115,8 @@ void thread_ihm (void *p_arg)
 				break;
 		}
 
-		// Je gère ce qui va être envoyer à l'interface Java continuellement
-		if (cmd == 'A' || cmd == 'B') {
-			fprintf(fp_usart1, "T%03u\r\n",(unsigned int)(get_throttle()));
-		}
-		else {
-			fprintf(fp_usart1, "V%03u\r\n",(unsigned int)(get_speed_sensor()));
-		}
+		fprintf(fp_usart1, "T%03u\r\n",(unsigned int)(get_throttle()));
+		fprintf(fp_usart1, "V%03u\r\n",(unsigned int)(get_speed_sensor()));
 
 		OSTimeDly(OS_TICKS_PER_SEC / 10);
 		if (flag2==1){
