@@ -50,12 +50,12 @@ public class Controller {
 		System.out.println("Receive: " + resp);
 		switch (resp.charAt(0)) {
 			case CONSTANTS.THROTTLE:
-				str = resp.substring(1, resp.length()-2);
+				str = resp.substring(1, resp.length());
 				out.setThorttle(Integer.parseInt(str));
 				break;
 			
 			case CONSTANTS.SPEED:
-				str = resp.substring(1, resp.length()-2);
+				str = resp.substring(1, resp.length());
 				out.setSpeed(Integer.parseInt(str));
 				break;
 			

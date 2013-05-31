@@ -5,6 +5,7 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 
+import java.util.StringTokenizer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -80,7 +81,9 @@ public class Communication implements SerialPortEventListener {
                 				// n'essayer de recevoir la reponse que si les donnees sont pretes
                 				if(flag && (len = in.read(buffer)) > -1){
 									newStr = new String(buffer,0,len);
-									ctrl.receiveResponse(newStr);
+									StringTokenizer stringtokenizer = new StringTokenizer(newStr, "\r\n");
+									while (stringtokenizer.hasMoreElements())
+										ctrl.receiveResponse(stringtokenizer.nextToken());
 									synchronized(verrou) {
 										flag = false;
 									}
