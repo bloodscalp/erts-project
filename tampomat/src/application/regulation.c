@@ -87,15 +87,13 @@ void regultation_fsm()
 		break;
 
 	case off:
-
 		regulation_throttle = 0;
 
 		/* Enable regulation on command detection */
 		if(get_cmd_on()) {
 			set_statusReg(on);
-			set_cruise_speed(0);
+			set_cruise_speed(get_speed_sensor());//FIXME au lieu de 0, faut mettre la vitesse actuelle!
 		}
-
 		break;
 
 	case standby:
@@ -107,7 +105,8 @@ void regultation_fsm()
 
 		/* Set new cruise speed on command detection */
 		if(get_cmd_set()) {
-			set_cruise_speed(get_speed_sensor());
+			if ((get_speed_sensor()<CRUISE_SPEED_MAX) && (get_speed_sensor()>CRUISE_SPEED_MIN)) //FIXME added
+				set_cruise_speed(get_speed_sensor()); //FIXME ESt ce qu'on check la vitesse avant??
 		}
 
 		/* Go back to on if pedals are released or car speed is in range again */
@@ -121,8 +120,8 @@ void regultation_fsm()
 
 		/* Set new cruise speed on command detection */
 		if(get_cmd_set()) {
-			set_cruise_speed(get_speed_sensor());
-			set_statusReg(on);
+			//set_cruise_speed(get_speed_sensor());//FIXME on doit revenir de INT seul avec RESUME non??
+			//set_statusReg(on);
 		}
 
 		/* Enable regulation on command detection */
@@ -182,7 +181,8 @@ void on_fsm()
 	case setSpeed:
 		/* Set new cruise speed on command detection */
 		if(get_cmd_set()) {
-			set_cruise_speed(get_speed_sensor());
+			if ((get_speed_sensor()<CRUISE_SPEED_MAX) && (get_speed_sensor()>CRUISE_SPEED_MIN)) //FIXME add a check
+				set_cruise_speed(get_speed_sensor());
 		}
 
 		/* Increase cruise speed by one step */
@@ -210,7 +210,10 @@ void on_fsm()
 		break;
 
 	case blocked:
-		if(get_cruise_speed() < CRUISE_SPEED_MAX || get_cruise_speed() < CRUISE_SPEED_MIN)
+		if(get_cmd_set()) {
+			set_cruise_speed(get_speed_sensor());
+		}
+		if((get_cruise_speed() < CRUISE_SPEED_MAX) && (get_cruise_speed() > CRUISE_SPEED_MIN)) //FIXME now changed from || to &&, and < to >
 			set_statusRegOn(setSpeed);
 		break;
 	}

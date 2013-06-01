@@ -18,6 +18,7 @@
 #include "regulation.h"
 #include "thread_car_model.h"
 #include "thread_ihm.h"
+#include "globals.h"
 
 /************************************************************************
  *
@@ -89,6 +90,12 @@ void init_cible_ntrt(void)
 	BSP_IntEnAll(); 	// Activation des interruptions
 	BSP_Init(); 		// Initialisation de la carte NTRT
 
+	bool no_err;
+	no_err=create_getset_mutex(); //create & initalize all mutex
+	//if (no_err==FALSE) //FIXME fail quand je veux afficher qqch
+	//	fprintf(fp_usart1, "--- mutex create successfully\r\n");
+	//else
+	//	fprintf(fp_usart1, "--- error(s) in mutex creation\r\n");
 }
 
 /************************************************************************

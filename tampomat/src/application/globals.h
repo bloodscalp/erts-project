@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include "stm32f10x_includes.h"
 
+
 #define CST_PERIOD_REGULATION OS_TICKS_PER_SEC/20	// 20Hz, 50ms
 #define CST_PERIOD_CAR_MODEL  OS_TICKS_PER_SEC/20	// 20Hz, 50ms
 #define BUG_NR 0
@@ -36,6 +37,8 @@ typedef enum statusThrottleCtrl_t {
 	proport_sat
 } statusThrottleCtrl;
 
+bool create_getset_mutex(void);
+bool destroy_getset_mutex(void);
 
 void set_statusReg(statusReg status);
 statusReg get_statusReg(void);

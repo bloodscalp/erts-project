@@ -6,6 +6,7 @@
  */
 
 #include "globals.h"
+#include "OS_CPU.h"
 
 #define MUTEX_PRIO 4
 
@@ -39,7 +40,67 @@ bool 	cmd_on,
 		cmd_res,
 		saturation;
 
+bool create_getset_mutex(void){
+	uint8_t cnt=0;
+	cmd_on_mutex = OSSemCreate(1);	//Initialement non bloquant
+	if (cmd_on_mutex == (void *)0)
+		cnt+=1; //+ 1 error
+	cmd_off_mutex = OSSemCreate(1);	//Initialement non bloquant
+	if (cmd_off_mutex == (void *)0)
+		cnt+=1; //+ 1 error
+	cmd_acc_mutex = OSSemCreate(1);	//Initialement non bloquant
+	if (cmd_acc_mutex == (void *)0)
+		cnt+=1; //+ 1 error
+	cmd_dec_mutex = OSSemCreate(1);	//Initialement non bloquant
+	if (cmd_dec_mutex == (void *)0)
+		cnt+=1; //+ 1 error
+	cmd_set_mutex = OSSemCreate(1);	//Initialement non bloquant
+	if (cmd_set_mutex == (void *)0)
+		cnt+=1; //+ 1 error
+	cmd_res_mutex = OSSemCreate(1);	//Initialement non bloquant
+	if (cmd_res_mutex == (void *)0)
+		cnt+=1; //+ 1 error
+	saturation_mutex = OSSemCreate(1);	//Initialement non bloquant
+	if (saturation_mutex == (void *)0)
+		cnt+=1; //+ 1 error
+	if (cnt!=0)
+		return FALSE; //error in mutex creation
+	else
+		return TRUE;  //no error
+}
+
+bool destroy_getset_mutex(void){
+	INT8U *perr=OS_ERR_NONE;
+	uint8_t cnt=0;
+	OSSemDel(cmd_on_mutex,OS_DEL_ALWAYS,perr);
+	if (*perr!=OS_ERR_NONE)
+		cnt+=1;
+	OSSemDel(cmd_off_mutex,OS_DEL_ALWAYS,perr);
+	if (*perr!=OS_ERR_NONE)
+		cnt+=1;
+	OSSemDel(cmd_acc_mutex,OS_DEL_ALWAYS,perr);
+	if (*perr!=OS_ERR_NONE)
+		cnt+=1;
+	OSSemDel(cmd_dec_mutex,OS_DEL_ALWAYS,perr);
+	if (*perr!=OS_ERR_NONE)
+		cnt+=1;
+	OSSemDel(cmd_set_mutex ,OS_DEL_ALWAYS,perr);
+	if (*perr!=OS_ERR_NONE)
+		cnt+=1;
+	OSSemDel(cmd_res_mutex,OS_DEL_ALWAYS,perr);
+	if (*perr!=OS_ERR_NONE)
+		cnt+=1;
+	OSSemDel(saturation_mutex,OS_DEL_ALWAYS,perr);
+	if (*perr!=OS_ERR_NONE)
+		cnt+=1;
+	if (cnt!=0)
+		return FALSE; //error in mutex deletion
+	else
+		return TRUE;  //no error
+}
+
 void set_statusReg(statusReg status){
+
 	statusReg_i = status;
 }
 statusReg get_statusReg(void){
@@ -111,7 +172,10 @@ uint8_t get_dec_sensor(void){
 }
 
 void set_cmd_on(bool cmd){
-	cmd_on = cmd;
+	INT8U erreur;
+	OSSemPend(cmd_on_mutex, 0, &erreur);
+		cmd_on = cmd;
+	OSSemPost(cmd_on_mutex);
 }
 bool get_cmd_on(void){
 	int tmp;
@@ -121,7 +185,10 @@ bool get_cmd_on(void){
 }
 
 void set_cmd_off(bool cmd){
-	cmd_off = cmd;
+	INT8U erreur;
+	OSSemPend(cmd_off_mutex, 0, &erreur);
+		cmd_off = cmd;
+	OSSemPost(cmd_off_mutex);
 }
 bool get_cmd_off(void){
 	int tmp;
@@ -131,7 +198,10 @@ bool get_cmd_off(void){
 }
 
 void set_cmd_acc(bool cmd){
-	cmd_acc = cmd;
+	INT8U erreur;
+	OSSemPend(cmd_acc_mutex, 0, &erreur);
+		cmd_acc = cmd;
+	OSSemPost(cmd_acc_mutex);
 }
 bool get_cmd_acc(void){
 	int tmp;
@@ -141,7 +211,10 @@ bool get_cmd_acc(void){
 }
 
 void set_cmd_dec(bool cmd){
-	cmd_dec = cmd;
+	INT8U erreur;
+	OSSemPend(cmd_dec_mutex, 0, &erreur);
+		cmd_dec = cmd;
+	OSSemPost(cmd_dec_mutex);
 }
 bool get_cmd_dec(void){
 	int tmp;
@@ -151,7 +224,10 @@ bool get_cmd_dec(void){
 }
 
 void set_cmd_set(bool cmd){
-	cmd_set = cmd;
+	INT8U erreur;
+	OSSemPend(cmd_set_mutex, 0, &erreur);
+		cmd_set = cmd;
+	OSSemPost(cmd_set_mutex);
 }
 bool get_cmd_set(void){
 	int tmp;
@@ -161,7 +237,10 @@ bool get_cmd_set(void){
 }
 
 void set_cmd_res(bool cmd){
-	cmd_res = cmd;
+	INT8U erreur;
+	OSSemPend(cmd_res_mutex, 0, &erreur);
+		cmd_res = cmd;
+	OSSemPost(cmd_res_mutex);
 }
 bool get_cmd_res(void){
 	int tmp;
