@@ -1,10 +1,14 @@
-/*
- * globals.c
+/***********************************************************************
+ *  Global variables access (mutex)
  *
- *  Created on: 13 mai 2013
- *      Author: William
- */
-
+ *	Filename    : 	globals.c
+ *  Version     : 	V1.0
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
+ *
+ *  Email 		:	prenom.nom@master.hes-so.ch
+ *
+ ***********************************************************************/
 #include "globals.h"
 #include "OS_CPU.h"
 

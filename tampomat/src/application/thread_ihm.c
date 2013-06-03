@@ -1,44 +1,33 @@
 /***********************************************************************
  *  Programme d'interfacage avec la partie Java
  *
+ *	Filename    : 	thread_ihm.c
+ *  Version     : 	V1.1
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
  *
- *	Filename      : thread_ihm.c
- *  Version       : V1.1
- *  Programmer(s) : Mikael Trigo
+ *  Email 		:	prenom.nom@master.hes-so.ch
  *
  ***********************************************************************/
 
-
-//
-
-// Stack de la tache
-//
 
 #include <stdio.h>
 
 #include "app.h"
 #include "thread_ihm.h"
 #include "globals.h"
+#include "thread_car_model.h"
 
-/************************************************************************
- *
- * Definition de la tache
- *
- ************************************************************************/
- 
- 
+
 void thread_ihm (void *p_arg)
 {
 	(void *) p_arg;
 
 	char cmd = '0';
-	char param[] = {'0','0', '0'};// paramètre pour le decomposer la commande de gaz ou break
+	char param[] = {'0','0','0'};// paramètre pour le decomposer la commande de gaz ou break
 	uint8_t flag = 0;
-	uint8_t flag2 = 0;
 
 	fprintf(fp_usart1,"S0\r\n");
-	set_statusReg(off);
-
 
 	while(1){
 		// scrute les entrees
@@ -52,55 +41,42 @@ void thread_ihm (void *p_arg)
 				param[2] = USART1_BUFFER_IN[3];
 			}
 			USART1_CNT_IN = 0;
-	//		if (cmd == '1'){
-	//			flag=1; //on est ON
-	//			flag2=1;
-	//		}
-
 		}
 
-		if (flag ==1){
-			switch(cmd) {
-				case '0' :
-					fprintf(fp_usart1, "S0\r\n");
-					set_statusReg(off);
-					OSTimeDly(OS_TICKS_PER_SEC / 10);
-					flag = 0;
-					break;
+		switch(cmd) {
+			case '0' :
+				fprintf(fp_usart1, "S0\r\n");
+				set_cmd_off(TRUE);
+				flag = 0;
+				break;
 
-				case 'R' :
-					fprintf(fp_usart1, "Reset ! \r\n");
-					set_cmd_res(TRUE);
-					OSTimeDly(OS_TICKS_PER_SEC / 10);
-					break;
+			case 'R' :
+				fprintf(fp_usart1, "Reset ! \r\n");
+				set_cmd_res(TRUE);
+				break;
 
-				case 'S':
-					fprintf(fp_usart1, "Set ! \r\n");
-					set_cmd_set(TRUE);
-					OSTimeDly(OS_TICKS_PER_SEC / 10);
-					break;
+			case 'S':
+				fprintf(fp_usart1, "Set ! \r\n");
+				set_cmd_set(TRUE);
+				break;
 
-				case 'D' :
-					fprintf(fp_usart1, "DEC ! \r\n");
-					set_cmd_dec(TRUE);
-					OSTimeDly(OS_TICKS_PER_SEC / 10);
-					break;
+			case 'D' :
+				fprintf(fp_usart1, "DEC ! \r\n");
+				set_cmd_dec(TRUE);
+				break;
 
-				case 'U' :
-					fprintf(fp_usart1, "ACC ! \r\n");
-					set_cmd_acc(TRUE);
-					OSTimeDly(OS_TICKS_PER_SEC / 10);
-					break;
+			case 'U' :
+				fprintf(fp_usart1, "ACC ! \r\n");
+				set_cmd_acc(TRUE);
+				break;
 
-				default :
-					break;
-			}
+			default :
+				break;
 		}
 
 		switch(cmd) {
 			case '1' :
-				flag=1;
-				flag2=1;
+				set_cmd_on(TRUE);
 				break;
 
 			case 'A' :
@@ -117,12 +93,6 @@ void thread_ihm (void *p_arg)
 
 		fprintf(fp_usart1, "T%03u\r\n",(unsigned int)(get_throttle()));
 		fprintf(fp_usart1, "V%03u\r\n",(unsigned int)(get_speed_sensor()));
-
-		OSTimeDly(OS_TICKS_PER_SEC / 10);
-		if (flag2==1){
-			set_statusReg(on);
-			flag2=0;
-		}
 
 		switch (get_statusReg()) {
 			case on:
@@ -145,8 +115,10 @@ void thread_ihm (void *p_arg)
 				break;
 		}
 
+		thread_car_model(NULL);
+
 		cmd = 3;
-		OSTimeDly(OS_TICKS_PER_SEC / 5);
+		OSTimeDly(CST_PERDIO_IHM);
 
 	}
 }

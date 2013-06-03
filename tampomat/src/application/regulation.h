@@ -1,12 +1,14 @@
 /***********************************************************************
- *  Speed regulation system
+ *  Spee regulation system
  *
- *	Filename      : regulation.h
- *  Version       : V1.1
- *  Programmer(s) : William Aebi, Christian Muller
+ *	Filename    : 	regulation.h
+ *  Version     : 	V1.0
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
+ *
+ *  Email 		:	prenom.nom@master.hes-so.ch
  *
  ***********************************************************************/
-
 #ifndef REGULATION_H_
 #define REGULATION_H_
 

@@ -1,9 +1,14 @@
-/*
- * globals.h
+/***********************************************************************
+ *  Global variables and structures
  *
- *  Created on: 13 mai 2013
- *      Author: William
- */
+ *	Filename    : 	globals.h
+ *  Version     : 	V1.0
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
+ *
+ *  Email 		:	prenom.nom@master.hes-so.ch
+ *
+ ***********************************************************************/
 
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
@@ -14,7 +19,8 @@
 
 #define CST_PERIOD_REGULATION OS_TICKS_PER_SEC/20	// 20Hz, 50ms
 #define CST_PERIOD_CAR_MODEL  OS_TICKS_PER_SEC/20	// 20Hz, 50ms
-#define BUG_NR 0
+#define CST_PERDIO_IHM		  OS_TICKS_PER_SEC/20
+#define BUG_NR 0 // indicate bug nr for reliability test
 #define PEDALS_MIN 		3 // 3% of the value of acc_sensor (0 to 100)
 
 typedef enum statusReg_t {
@@ -27,7 +33,7 @@ typedef enum statusReg_t {
 
 typedef enum statusRegOn_t {
 	on_init,
-	blocked,
+	idle,
 	setSpeed
 } statusRegOn;
 

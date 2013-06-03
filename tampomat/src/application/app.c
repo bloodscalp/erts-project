@@ -6,7 +6,14 @@
  *  Version       : V1.1
  *  Programmer(s) : Xavier Meyer
  *
+ *  Version     : 	V1.2
+ *  Programmers : 	Mikael Trigo - Gregoire Hartman
+ *  				William Aebi - Christian Mueller
+ *
+ *  Email 		:	prenom.nom@master.hes-so.ch
+ *
  ***********************************************************************/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -25,14 +32,6 @@
  * Definition du STACK et globale de l'USART1
  *
  ************************************************************************/
-
-
-
-// Stack de la tache
-//static  OS_STK          AppTaskStk[APP_TASK_STK_SIZE];
-// Stack de la tache
-
-/* ----------------------------------------------- */
 
 #if OS_STK_GROWTH == 0
 #define init_pile(stack,size) (&stack[0])
@@ -76,10 +75,6 @@ void initialise_taches (void)
 				init_pile(pileTache[1], TAILLE_PILE_TACHE),
 				PRIORITE_TACHE+1);
 
-	OSTaskCreate(thread_car_model, NULL,
-				init_pile(pileTache[2], TAILLE_PILE_TACHE),
-				PRIORITE_TACHE+2);
-
 	OSTaskDel(OS_PRIO_SELF);
 }
 
@@ -91,11 +86,7 @@ void init_cible_ntrt(void)
 	BSP_Init(); 		// Initialisation de la carte NTRT
 
 	bool no_err;
-	no_err=create_getset_mutex(); //create & initalize all mutex
-	//if (no_err==FALSE) //FIXME fail quand je veux afficher qqch
-	//	fprintf(fp_usart1, "--- mutex create successfully\r\n");
-	//else
-	//	fprintf(fp_usart1, "--- error(s) in mutex creation\r\n");
+	no_err = create_getset_mutex(); //create & initalize all mutex
 }
 
 /************************************************************************

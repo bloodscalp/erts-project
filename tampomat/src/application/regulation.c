@@ -1,27 +1,31 @@
 /***********************************************************************
  *  Speed regulation system
  *
- *	Filename      : regulation.c
- *  Version       : V1.1
- *  Programmer(s) : William Aebi, Christian Muller
+ *	Filename    : 	regulation.c
+ *  Version     : 	V1.0
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
+ *
+ *  Email 		:	prenom.nom@master.hes-so.ch
  *
  ***********************************************************************/
-
 #define THROTTLE_SAT	45.0
 #define THROTTLE_ZERO	0.0
 #define THROTTLE_STEP	1
 
 #define CRUISE_SPEED_MAX		150 // km/h
 #define CRUISE_SPEED_MIN		30 	// km/h
-#define CRUISE_SPEED_STEP 5
+#define CRUISE_SPEED_STEP 		2
 
-#define KP				8.113
+#define KP				6 //8.113
 #define KI				0.5
 
+#include <stdio.h>
 
 #include "regulation.h"
 #include "stm32f10x_includes.h"
 #include "globals.h"
+#include "app.h"
 
 float 	prop_act,
 		int_act,
@@ -58,10 +62,8 @@ void regultation_fsm()
 
 	switch (get_statusReg()) {
 	case reg_init:
-		set_cruise_speed(0);
 		set_statusReg(off);
 		break;
-
 
 	case on:
 
@@ -80,7 +82,6 @@ void regultation_fsm()
 			set_statusReg(standby);
 		}
 
-
 		/* Throttle control sub FSM */
 		throttle_control();
 
@@ -88,11 +89,11 @@ void regultation_fsm()
 
 	case off:
 		regulation_throttle = 0;
+		set_cruise_speed(0);
 
 		/* Enable regulation on command detection */
 		if(get_cmd_on()) {
 			set_statusReg(on);
-			set_cruise_speed(get_speed_sensor());//FIXME au lieu de 0, faut mettre la vitesse actuelle!
 		}
 		break;
 
@@ -103,10 +104,14 @@ void regultation_fsm()
 		/* Go in interruption mode if breaks hit */
 		check_breaks();
 
+		/* Decrease cruise speed by one step */
+		if(get_cmd_dec())
+			set_cruise_speed(get_cruise_speed()-CRUISE_SPEED_STEP);
+
 		/* Set new cruise speed on command detection */
 		if(get_cmd_set()) {
-			if ((get_speed_sensor()<CRUISE_SPEED_MAX) && (get_speed_sensor()>CRUISE_SPEED_MIN)) //FIXME added
-				set_cruise_speed(get_speed_sensor()); //FIXME ESt ce qu'on check la vitesse avant??
+			set_statusReg(on);
+			set_statusRegOn(setSpeed);
 		}
 
 		/* Go back to on if pedals are released or car speed is in range again */
@@ -118,17 +123,52 @@ void regultation_fsm()
 	case interrupted:
 		regulation_throttle = 0;
 
-		/* Set new cruise speed on command detection */
-		if(get_cmd_set()) {
-			//set_cruise_speed(get_speed_sensor());//FIXME on doit revenir de INT seul avec RESUME non??
-			//set_statusReg(on);
-		}
-
 		/* Enable regulation on command detection */
 		if(get_cmd_res())
 			set_statusReg(on);
 
 		break;
+	}
+}
+
+void on_fsm()
+{
+	switch(get_statusRegOn()) {
+	case on_init:
+		set_statusRegOn(idle);
+		break;
+
+	case idle:
+		if(get_cmd_set())
+			set_statusRegOn(setSpeed);
+
+		/* Increase cruise speed by one step */
+		if(get_cmd_acc()) {
+			set_cruise_speed(get_cruise_speed()+CRUISE_SPEED_STEP);
+		}
+
+		/* Decrease cruise speed by one step */
+		if(get_cmd_dec()) {
+			set_cruise_speed(get_cruise_speed()-CRUISE_SPEED_STEP);
+
+#if BUG_NR == 1
+			regulation_throttle = 100;
+			while (1){
+				OSTimeDly(OS_TICKS_PER_SEC / 10);
+			};
+#endif /* BUG 1 */
+
+
+		}
+		break;
+
+	case setSpeed:
+		/* Set new cruise speed */
+		if ((get_speed_sensor()>CRUISE_SPEED_MIN) && (get_speed_sensor()<CRUISE_SPEED_MAX))
+			set_cruise_speed(get_speed_sensor());
+		set_statusRegOn(idle);
+		break;
+
 	}
 }
 
@@ -139,7 +179,6 @@ void check_breaks()
 		set_statusReg(interrupted);
 	}
 }
-
 
 void proport_integr(float cruise_speed, float speed_sensor)
 {
@@ -171,54 +210,6 @@ void sat_ctrl()
 	}
 }
 
-void on_fsm()
-{
-	switch(get_statusRegOn()) {
-	case on_init:
-		set_statusRegOn(setSpeed);
-		break;
-
-	case setSpeed:
-		/* Set new cruise speed on command detection */
-		if(get_cmd_set()) {
-			if ((get_speed_sensor()<CRUISE_SPEED_MAX) && (get_speed_sensor()>CRUISE_SPEED_MIN)) //FIXME add a check
-				set_cruise_speed(get_speed_sensor());
-		}
-
-		/* Increase cruise speed by one step */
-		if(get_cmd_acc()) {
-			set_cruise_speed(get_cruise_speed()+CRUISE_SPEED_STEP);
-		}
-
-		/* Decrease cruise speed by one step */
-		if(get_cmd_dec()) {
-			set_cruise_speed(get_cruise_speed()-CRUISE_SPEED_STEP);
-
-#if BUG_NR == 1
-			regulation_throttle = 100;
-			while (1){
-						OSTimeDly(OS_TICKS_PER_SEC / 10);};
-#endif /* BUG 1 */
-
-
-		}
-
-		/*  */
-		if(get_cruise_speed() >= CRUISE_SPEED_MAX || get_cruise_speed() <= CRUISE_SPEED_MIN)
-			set_statusRegOn(blocked);
-
-		break;
-
-	case blocked:
-		if(get_cmd_set()) {
-			set_cruise_speed(get_speed_sensor());
-		}
-		if((get_cruise_speed() < CRUISE_SPEED_MAX) && (get_cruise_speed() > CRUISE_SPEED_MIN)) //FIXME now changed from || to &&, and < to >
-			set_statusRegOn(setSpeed);
-		break;
-	}
-}
-
 void throttle_control()
 {
 	switch (get_statusThrottleCtrl()) {
@@ -246,7 +237,8 @@ void throttle_control()
 	sat_ctrl();
 }
 
-float get_regulation_throttle() {
+float get_regulation_throttle()
+{
 	return regulation_throttle;
 }
 

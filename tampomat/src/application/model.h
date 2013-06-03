@@ -1,9 +1,14 @@
-/*
- * model.h
+/***********************************************************************
+ *  Car simulation model
  *
- *  Created on: 3 mai 2013
- *      Author: William
- */
+ *	Filename    : 	model.h
+ *  Version     : 	V1.0
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
+ *
+ *  Email 		:	prenom.nom@master.hes-so.ch
+ *
+ ***********************************************************************/
 
 #ifndef MODEL_H_
 #define MODEL_H_

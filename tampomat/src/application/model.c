@@ -1,9 +1,14 @@
-/*
- * model.c
+/***********************************************************************
+ *  Car simulation model
  *
- *  Created on: 3 mai 2013
- *      Author: William
- */
+ *	Filename    : 	model.c
+ *  Version     : 	V1.0
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
+ *
+ *  Email 		:	prenom.nom@master.hes-so.ch
+ *
+ ***********************************************************************/
 
 /*#define TENGINE			-0.04f
 #define IENGINE			0.025f

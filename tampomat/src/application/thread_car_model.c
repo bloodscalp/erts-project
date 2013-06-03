@@ -1,12 +1,13 @@
 /***********************************************************************
  *  Function of the thread car_model
  *
- *  OS: uCosII
- *  Cible: NTRT
+ *	Filename    : 	thread_car_model.c
+ *  Version     : 	V1.0
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
  *
- *	Filename      : thread_car_model.h
- *  Version       : V1.1
- *  Programmer(s) : Gregoire Hagmann
+ *  Email 		:	prenom.nom@master.hes-so.ch
+ *
  ***********************************************************************/
 #include <stdint.h>
 
@@ -26,8 +27,8 @@ void thread_car_model (void *p_arg)
 	uint8_t throttle_sim;
 	float speed_sensor;
 
-	int next_deadline = OSTimeGet()+CST_PERIOD_CAR_MODEL;
-	while (1) {
+//	int next_deadline = OSTimeGet()+CST_PERIOD_CAR_MODEL;
+//	while (1) {
 		//Take into account the pedals only if >= 3%, else value from regulator (throttle) or 0 (break)
 		throttle_sim = get_acc_sensor();
 		if (throttle_sim < PEDALS_MIN)
@@ -47,8 +48,8 @@ void thread_car_model (void *p_arg)
 		car_simulation(&speed_sensor, breaks_sim, throttle_sim);
 		set_speed_sensor(speed_sensor);
 
-		OSTimeDly(next_deadline-OSTimeGet());
-		next_deadline += CST_PERIOD_CAR_MODEL;
-	}
-	OSTaskDel(OS_PRIO_SELF);
+//		OSTimeDly(next_deadline-OSTimeGet());
+//		next_deadline += CST_PERIOD_CAR_MODEL;
+//	}
+//	OSTaskDel(OS_PRIO_SELF);
 }

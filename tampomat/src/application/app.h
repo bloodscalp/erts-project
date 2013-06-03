@@ -1,3 +1,15 @@
+/***********************************************************************
+ *  Main app header
+ *
+ *	Filename    : 	app.h
+ *  Version     : 	V1.0
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
+ *
+ *  Email 		:	prenom.nom@master.hes-so.ch
+ *
+ ***********************************************************************/
+
 #ifndef APP_H_
 #define APP_H_
 

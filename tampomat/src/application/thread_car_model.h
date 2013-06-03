@@ -1,12 +1,13 @@
 /***********************************************************************
  *  Header for function of the thread car_model
  *
- *  OS: uCosII
- *  Cible: NTRT
+ *	Filename    : 	thread_car_model.h
+ *  Version     : 	V1.1
+ *  Programmers : 	Mikael Trigo - Gregoire Hagmann
+ *  				William Aebi - Christian Mueller
  *
- *	Filename      : thread_car_model.h
- *  Version       : V1.1
- *  Programmer(s) : Gregoire Hagmann
+ *  Email 		:	prenom.nom@master.hes-so.ch
+ *
  ***********************************************************************/
 
 #ifndef THREAD_CAR_MODEL_H_
